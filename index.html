@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Abhilash's Drive</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f3f3f3;
+      padding: 10px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header h1 {
+      font-size: 1.5em;
+      color: #333;
+      flex: 1 1 auto;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #pathDisplay {
+      margin: 10px 0;
+      color: #666;
+      font-size: 0.95em;
+    }
+
+    #searchInput {
+      width: 100%;
+      padding: 10px;
+      margin: 12px 0;
+      font-size: 1em;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      padding: 12px 10px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+    }
+
+    li.folder {
+      font-weight: bold;
+      color: #007bff;
+    }
+
+    li.file a {
+      text-decoration: none;
+      color: #333;
+    }
+
+    .description {
+      font-size: 0.85em;
+      color: #777;
+      margin-top: 4px;
+    }
+
+    img.preview {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+
+    @media (max-width: 600px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .buttons {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      button {
+        width: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Abhilash's Drive</h1>
+      <div class="buttons">
+        <button onclick="goHome()">🏠 Home</button>
+        <button onclick="goBack()">⬅ Back</button>
+      </div>
+    </div>
+    <div id="pathDisplay">Path: /</div>
+    <input type="text" id="searchInput" placeholder="Search folders or files..." oninput="render()" />
+    <ul id="driveList"></ul>
+  </div>
+
+  <script>
+    const root =
+
+
+    {
+    "type": "folder",
+    "name": "Abhilash's Drive",
+    "children": [
+      {
+        "type": "folder",
+        "name": "Personal",
+        "children": [
+          {
+            "type": "folder",
+            "name": "Camera",
+            "children": [
+              {
+                "type": "folder",
+                "name": "AR",
+                "children": [
+                  {
+                    "type": "folder",
+                    "name": "Engagement",
+                    "children": [
+                      {
+                        "type": "file",
+                        "name": "Engagement Trailer",
+                        "url": "https://t.me/c/2811631848/2"
+                      },
+                      {
+                        "type": "file",
+                        "name": "Engagement Reel",
+                        "url": "https://t.me/c/2811631848/3"
+                      },
+                      {
+                        "type": "file",
+                        "name": "Engagement Song",
+                        "url": "https://t.me/c/2811631848/4"
+                      },
+                      {
+                        "type": "file",
+                        "name": "Traditional Video",
+                        "url": "https://t.me/c/2811631848/5"
+                      },
+                      {
+                        "type": "file",
+                        "name": "20250607 AR Engagement - Parth",
+                        "url": "https://t.me/c/2811631848/10"
+                      },
+                      {
+                        "type": "file",
+                        "name": "20250607 AR Engagement - Radhika",
+                        "url": "https://t.me/c/2811631848/11"
+                      },
+                      {
+                        "type": "file",
+                        "name": "20250607 AR Engagement - Tushar Dada",
+                        "url": "https://t.me/c/2811631848/12"
+                      },
+                      {
+                        "type": "file",
+                        "name": "20250607 AR Engagement - Camera 1",
+                        "url": "https://t.me/c/2811631848/14"
+                      },
+                      {
+                        "type": "file",
+                        "name": "20250607 AR Engagement - Camera 2",
+                        "url": "https://t.me/c/2811631848/19"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "file",
+                    "name": "Yuhi Lounge",
+                    "url": "https://t.me/c/2724616078/2"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+
+
+    ;
+
+    let currentFolder = root;
+    let pathStack = [];
+
+    function goBack() {
+      if (pathStack.length > 0) {
+        currentFolder = pathStack.pop();
+        document.getElementById("searchInput").value = "";
+        render();
+      }
+    }
+
+    function goHome() {
+      currentFolder = root;
+      pathStack = [];
+      document.getElementById("searchInput").value = "";
+      render();
+    }
+
+    function getPath() {
+      const names = pathStack.map(f => f.name);
+      if (currentFolder !== root) names.push(currentFolder.name);
+      return names.join(" / ");
+    }
+
+    function render() {
+      const list = document.getElementById("driveList");
+      const pathDisplay = document.getElementById("pathDisplay");
+      const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+      list.innerHTML = "";
+
+      let itemsToShow = [];
+
+      if (searchTerm) {
+        itemsToShow = searchRecursive(currentFolder, searchTerm);
+      } else {
+        itemsToShow = currentFolder.children;
+      }
+
+      itemsToShow.forEach(item => {
+        const li = document.createElement("li");
+
+        if (item.type === "folder") {
+          li.textContent = "📁 " + item.name;
+          li.className = "folder";
+          li.onclick = () => {
+            pathStack.push(currentFolder);
+            currentFolder = item;
+            document.getElementById("searchInput").value = "";
+            render();
+          };
+        } else {
+          li.className = "file";
+          const previewSrc = item.previewUrl || (/\.(jpg|jpeg|png|gif|webp)$/i.test(item.url) ? item.url : null);
+          li.innerHTML = `
+            <div style="display:flex; align-items:center;">
+              ${previewSrc ? `<img class="preview" src="${previewSrc}" alt="preview"/>` : ""}
+              <div>
+                <a href="${item.url}" target="_blank">📄 ${item.name}</a>
+                ${item.description ? `<div class="description">${item.description}</div>` : ""}
+              </div>
+            </div>
+          `;
+        }
+
+        list.appendChild(li);
+      });
+
+      pathDisplay.textContent = "Path: /" + getPath();
+    }
+
+    function searchRecursive(folder, term) {
+      let results = [];
+
+      folder.children.forEach(item => {
+        if (item.name.toLowerCase().includes(term)) {
+          results.push(item);
+        }
+
+        if (item.type === "folder") {
+          results = results.concat(searchRecursive(item, term));
+        }
+      });
+
+      return results;
+    }
+
+    render();
+  </script>
+</body>
+</html>
